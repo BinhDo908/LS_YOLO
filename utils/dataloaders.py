@@ -422,8 +422,28 @@ class LoadStreams:
         return len(self.sources)  # 1E12 frames = 32 streams at 30 FPS for 30 years
 
 
+# Custom label directory for non-standard dataset structures (set via train.py from YAML)
+_LABEL_DIR = None   # e.g. 'D:\\Training\\labels_yolo'
+_IMG_SUBDIR = 'img'  # subdirectory name where images live (e.g. 'img' instead of 'images')
+
+
 def img2label_paths(img_paths):
     # Define label paths as a function of image paths
+    if _LABEL_DIR is not None:
+        sep = os.sep
+        subdir_pat = f'{sep}{_IMG_SUBDIR}{sep}'
+        results = []
+        for x in img_paths:
+            if subdir_pat in x:
+                # D:\...\<location>\img\<name>.tif → <LABEL_DIR>\<location>\<name>.txt
+                before, after = x.rsplit(subdir_pat, 1)
+                location = os.path.basename(before)
+                name = after.rsplit('.', 1)[0] + '.txt'
+                results.append(os.path.join(_LABEL_DIR, location, name))
+            else:
+                sa, sb = f'{sep}images{sep}', f'{sep}labels{sep}'
+                results.append(sb.join(x.rsplit(sa, 1)).rsplit('.', 1)[0] + '.txt')
+        return results
     sa, sb = f'{os.sep}images{os.sep}', f'{os.sep}labels{os.sep}'  # /images/, /labels/ substrings
     return [sb.join(x.rsplit(sa, 1)).rsplit('.', 1)[0] + '.txt' for x in img_paths]
 
@@ -466,7 +486,7 @@ class LoadImagesAndLabels(Dataset):
                     f += glob.glob(str(p / '**' / '*.*'), recursive=True)
                     # f = list(p.rglob('*.*'))  # pathlib
                 elif p.is_file():  # file
-                    with open(p) as t:
+                    with open(p, encoding='utf-8') as t:
                         t = t.read().strip().splitlines()
                         parent = str(p.parent) + os.sep
                         f += [x.replace('./', parent, 1) if x.startswith('./') else x for x in t]  # to global path

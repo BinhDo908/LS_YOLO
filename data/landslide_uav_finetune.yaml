@@ -1,0 +1,8 @@
+img_subdir: img
+label_dir: D:\Training\labels_yolo_clean
+names:
+  0: landslide
+nc: 1
+train: D:\Training\splits\train_uav_only.txt
+val: D:\Training\splits\val_uav_only.txt
+test: D:\Training\splits\test_uav_only.txt

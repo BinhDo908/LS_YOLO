@@ -1,0 +1,15 @@
+# Landslide Detection Dataset
+# Images: D:\Training\Landslide_Dataset\Tài liệu ching chong\<location>\img\<name>.tif
+# Labels: D:\Training\labels_yolo\<location>\<name>.txt
+
+train: D:\Training\splits\train.txt
+val:   D:\Training\splits\val.txt
+test:  D:\Training\splits\test.txt
+
+nc: 1
+names:
+  0: landslide
+
+# Custom label directory (used by img2label_paths override in dataloaders.py)
+label_dir: D:\Training\labels_yolo_clean
+img_subdir: img

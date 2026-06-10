@@ -154,6 +154,10 @@ def run(
 
         # Data
         data = check_dataset(data)  # check
+        if 'label_dir' in data:
+            import utils.dataloaders as _dl
+            _dl._LABEL_DIR = data['label_dir']
+            _dl._IMG_SUBDIR = data.get('img_subdir', 'img')
 
     # Configure
     model.eval()
